@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id       String  @id @default(ulid())
+  email    String  @unique
+  username String? @unique
+  password String
+
+  isActive    Boolean   @default(false)
+  isBanned    Boolean   @default(false)
+  banReason   String?
+  bannedUntil DateTime?
+
+  profile           UserProfile?
+  sessions          Session[]
+  verificationCodes VerificationCode[]
+
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserProfile {
+  id String @id @default(ulid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName   String?
+  avatarURL     String?
+  backgroundURL String?
+  phoneNumber   String?
+  dateOfBirth   DateTime?
+  gender        Gender    @default(UNKNOWN)
+
+  preferences Json? @default("{}")
+
+  updatedAt DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNKNOWN
+}
+
+model Session {
+  id     String @id @default(ulid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String @unique
+
+  deviceInfo String?
+  ipAddress  String?
+
+  expiresAt  DateTime
+  lastUsedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model VerificationCode {
+  id     String @id @default(ulid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type CodeType
+  code String
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, type])
+}
+
+enum Role {
+  USER
+  ADMIN
+  SELLER
+}
+
+enum CodeType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  TWO_FACTOR_AUTH
+}
