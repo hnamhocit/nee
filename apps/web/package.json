@@ -1,28 +1,45 @@
 {
-  "name": "web",
-  "version": "0.1.0",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --port 3000",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint --max-warnings 0",
-    "check-types": "next typegen && tsc --noEmit"
-  },
-  "dependencies": {
-    "@repo/ui": "*",
-    "next": "^16.0.7",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
-    "@types/node": "^22.15.3",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
-    "eslint": "^9.39.1",
-    "typescript": "5.9.2"
-  }
+	"name": "web",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "biome check",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@heroui/react": "^2.8.5",
+		"@hookform/resolvers": "^5.2.2",
+		"@phosphor-icons/react": "^2.1.10",
+		"axios": "^1.13.2",
+		"clsx": "^2.1.1",
+		"framer-motion": "^12.23.25",
+		"next": "16.0.7",
+		"react": "19.2.1",
+		"react-dom": "19.2.1",
+		"react-hook-form": "^7.68.0",
+		"styled-components": "^6.1.19",
+		"uuid": "^13.0.0",
+		"zod": "^4.1.13",
+		"zustand": "^5.0.9",
+		"@repo/db": "*",
+		"@repo/shared": "*"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.8",
+		"@tailwindcss/postcss": "^4",
+		"@types/node": "^24.10.1",
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
+		"@types/uuid": "^10.0.0",
+		"babel-plugin-react-compiler": "1.0.0",
+		"tailwindcss": "^4",
+		"typescript": "^5"
+	},
+	"overrides": {
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3"
+	}
 }
