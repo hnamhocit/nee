@@ -1,198 +1,233 @@
-import Header from "@/components/Header";
+import Categories from '@/components/home/Categories'
+import Footer from '@/components/home/Footer'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import {
+	BadgeQuestionMarkIcon,
+	BellIcon,
+	CameraIcon,
+	LanguagesIcon,
+	ShoppingCartIcon,
+} from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-export const ECOMMERCE_CATEGORIES = [
-  {
-    id: 1,
-    name: "Men's Fashion",
-    slug: "mens-fashion",
-    image: "/categories/men-fashion.jpg",
-  },
-  {
-    id: 2,
-    name: "Phones & Accessories",
-    slug: "phones-accessories",
-    image: "/categories/phones.webp",
-  },
-  {
-    id: 3,
-    name: "Consumer Electronics",
-    slug: "consumer-electronics",
-    image: "/categories/electronics.jpeg",
-  },
-  {
-    id: 4,
-    name: "Computers & Laptops",
-    slug: "computers-laptops",
-    image: "/categories/computers.png",
-  },
-  { id: 5, name: "Cameras", slug: "cameras", image: "/categories/cameras.png" },
-  { id: 6, name: "Watches", slug: "watches", image: "/categories/watches.png" },
-  {
-    id: 7,
-    name: "Men's Shoes",
-    slug: "mens-shoes",
-    image: "/categories/men-shoes.png",
-  },
-  {
-    id: 8,
-    name: "Home Appliances",
-    slug: "home-appliances",
-    image: "/categories/home-appliances.png",
-  },
-  {
-    id: 9,
-    name: "Sports & Travel",
-    slug: "sports-travel",
-    image: "/categories/sports-travel.png",
-  },
-  {
-    id: 10,
-    name: "Automotive & Motorbikes",
-    slug: "automotive-motorbikes",
-    image: "/categories/vehicles.png",
-  },
-  {
-    id: 11,
-    name: "Women's Fashion",
-    slug: "womens-fashion",
-    image: "/categories/women-fashion.png",
-  },
-  {
-    id: 12,
-    name: "Mother & Baby",
-    slug: "mother-baby",
-    image: "/categories/mom-baby.png",
-  },
-  {
-    id: 13,
-    name: "Home & Living",
-    slug: "home-living",
-    image: "/categories/home-living.png",
-  },
-  { id: 14, name: "Beauty", slug: "beauty", image: "/categories/beauty.png" },
-  { id: 15, name: "Health", slug: "health", image: "/categories/health.png" },
-  {
-    id: 16,
-    name: "Women's Shoes",
-    slug: "womens-shoes",
-    image: "/categories/women-shoes.png",
-  },
-  {
-    id: 17,
-    name: "Women's Bags",
-    slug: "womens-bags",
-    image: "/categories/women-bags.png",
-  },
-  {
-    id: 18,
-    name: "Jewelry & Accessories",
-    slug: "jewelry-accessories",
-    image: "/categories/accessories.png",
-  },
-  {
-    id: 19,
-    name: "Groceries",
-    slug: "groceries",
-    image: "/categories/groceries.png",
-  },
-  {
-    id: 20,
-    name: "Books & Stationery",
-    slug: "books-stationery",
-    image: "/categories/books.png",
-  },
-  {
-    id: 21,
-    name: "Men's Bags",
-    slug: "mens-bags",
-    image: "/categories/men-bags.png",
-  },
-  { id: 22, name: "Toys", slug: "toys", image: "/categories/toys.png" },
-  { id: 23, name: "Pet Care", slug: "pet-care", image: "/categories/pets.png" },
-  {
-    id: 24,
-    name: "Tools & Home Improvement",
-    slug: "tools-home-improvement",
-    image: "/categories/tools.png",
-  },
-  {
-    id: 25,
-    name: "Kids' Fashion",
-    slug: "kids-fashion",
-    image: "/categories/kids-fashion.png",
-  },
-  {
-    id: 26,
-    name: "Laundry & Cleaning",
-    slug: "laundry-cleaning",
-    image: "/categories/laundry.png",
-  },
-  {
-    id: 27,
-    name: "Vouchers & Services",
-    slug: "vouchers-services",
-    image: "/categories/vouchers.png",
-  },
-];
+export default function Home() {
+	return (
+		<>
+			<div className='h-12 flex items-center justify-between container mx-auto px-4 text-sm text-gray-500'>
+				<div className='flex items-center gap-4'>
+					<Link href='/#'>Seller center</Link>
+					<Link href='/#'>Download App</Link>
+					<Separator
+						orientation='vertical'
+						className='h-6!'
+					/>
 
-const HomePage = () => {
-  return (
-    <>
-      <Header />
+					<div className='flex items-center gap-2'>
+						Follow us:
+						<Link href='/#'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='16'
+								height='16'
+								fill='currentColor'
+								className='bi bi-facebook'
+								viewBox='0 0 16 16'>
+								<path d='M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951' />
+							</svg>
+						</Link>
+						<Link href='/#'>
+							<svg
+								xmlns='http://www.w3.org/2000/svg'
+								width='16'
+								height='16'
+								fill='currentColor'
+								className='bi bi-twitter-x'
+								viewBox='0 0 16 16'>
+								<path d='M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z' />
+							</svg>
+						</Link>
+					</div>
+				</div>
 
-      <div className="container mx-auto space-y-24 py-8 min-h-screen">
-        <div className="flex gap-4 py-8">
-          <div
-            className="flex-1 bg-cover bg-center bg-no-repeat h-120 rounded-sm"
-            style={{
-              backgroundImage:
-                "url('https://img.freepik.com/free-vector/gradient-mountain-landscape_23-2149152831.jpg?semt=ais_hybrid&w=740&q=80')",
-            }}
-          ></div>
+				<div className='flex items-center gap-4'>
+					<div className='flex items-center gap-2'>
+						<BellIcon size={18} />
+						<div>Notifications</div>
+					</div>
 
-          <div className="shrink-0 w-96 flex flex-col gap-4">
-            <div
-              className="h-58 bg-cover bg-center bg-no-repeat rounded-sm"
-              style={{
-                backgroundImage:
-                  'url("https://cdn.pixabay.com/photo/2025/09/18/07/06/winding-path-9840681_1280.jpg")',
-              }}
-            ></div>
+					<div className='flex items-center gap-2'>
+						<BadgeQuestionMarkIcon size={18} />
+						<div>Help center</div>
+					</div>
 
-            <div
-              className="h-58 bg-cover bg-center bg-no-repeat rounded-sm"
-              style={{
-                backgroundImage:
-                  'url("https://marketplace.canva.com/EAGK_VGJ-wk/1/0/1600w/canva-purple-illustrative-lavender-desktop-wallpaper-IJjKe9JIOeM.jpg")',
-              }}
-            ></div>
-          </div>
-        </div>
+					<div className='flex items-center gap-2'>
+						<LanguagesIcon size={18} />
+						<div>English</div>
+					</div>
 
-        <div className="space-y-7">
-          <div className="text-3xl font-bold font-serif">Categories</div>
+					<Link
+						href='/auth/login'
+						className='font-semibold hover:underline text-red-500'>
+						Login / Register
+					</Link>
+				</div>
+			</div>
 
-          <div className="grid grid-cols-8">
-            {ECOMMERCE_CATEGORIES.slice(0, 16).map((category) => (
-              <div
-                key={category.id}
-                className="p-2 flex flex-col items-center gap-4"
-              >
-                <div
-                  className="h-24 w-24 bg-cover bg-center bg-no-repeat rounded-sm"
-                  style={{
-                    backgroundImage: `url(${category.image})`,
-                  }}
-                ></div>
+			<div
+				className='h-16 bg-cover bg-center bg-no-repeat'
+				style={{ backgroundImage: "url('/banner.png')" }}></div>
 
-                <div className="text-center">{category.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
+			<header className='sticky top-0 left-0 w-full z-20 bg-white shadow-sm'>
+				<div className='p-4 flex items-center container mx-auto'>
+					<div className='flex items-center gap-3 flex-1'>
+						<Link href='/'>
+							<Image
+								src='/logo.png'
+								alt='App Logo'
+								width={48}
+								height={48}
+							/>
+						</Link>
 
-export default HomePage;
+						<div className='font-heading text-xl font-bold'>
+							E-Commerce
+						</div>
+					</div>
+
+					<div className='flex-1 space-y-2'>
+						<div className='flex items-center gap-3 border shadow rounded-2xl p-1'>
+							<input
+								placeholder='Eg: Men fashion'
+								className='block bg-transparent outline-none p-2 flex-1'
+							/>
+
+							<Button
+								variant='ghost'
+								size='icon'>
+								<CameraIcon />
+							</Button>
+
+							<Button
+								size='lg'
+								className='bg-red-500 rounded-2xl!'>
+								Search
+							</Button>
+						</div>
+
+						<div className='flex items-center gap-3'>
+							<Link
+								href='/#'
+								className='text-sm text-red-500'>
+								All Categories
+							</Link>
+							<Separator
+								orientation='vertical'
+								className='h-4!'
+							/>
+							<Link
+								href='/#'
+								className='text-sm text-red-500'>
+								Deals
+							</Link>
+							<Separator
+								orientation='vertical'
+								className='h-4!'
+							/>
+							<Link
+								href='/#'
+								className='text-sm text-red-500'>
+								What's New
+							</Link>
+							<Separator
+								orientation='vertical'
+								className='h-4!'
+							/>
+							<Link
+								href='/#'
+								className='text-sm text-gray-500'>
+								Chrisamas atmosphere is good
+							</Link>
+						</div>
+					</div>
+
+					<div className='flex items-center justify-end flex-1'>
+						<ShoppingCartIcon
+							size={50}
+							className='text-red-500'
+						/>
+					</div>
+				</div>
+			</header>
+
+			<div className='min-h-screen container mx-auto px-4 py-16 space-y-16'>
+				<div className='space-y-7'>
+					<div className='flex gap-2'>
+						<div
+							className='flex-1 relative h-64 bg-cover bg-center bg-no-repeat rounded-sm shadow-lg'
+							style={{
+								backgroundImage:
+									"url('https://down-vn.img.susercontent.com/file/sg-11134258-822xw-mi05776kptz89f@resize_w797_nl.webp')",
+							}}></div>
+
+						<div className='flex flex-col gap-2 w-96 shrink-0'>
+							<div
+								className='flex-1 rounded-sm bg-center bg-cover bg-no-repeat'
+								style={{
+									backgroundImage:
+										"url('https://down-vn.img.susercontent.com/file/sg-11134258-822wx-mi05k03ds00169@resize_w398_nl.webp')",
+								}}></div>
+
+							<div
+								className='flex-1 rounded-sm bg-center bg-cover bg-no-repeat'
+								style={{
+									backgroundImage:
+										"url('https://down-vn.img.susercontent.com/file/sg-11134258-822wk-mi05k0igzqbla8@resize_w398_nl.webp')",
+								}}></div>
+						</div>
+					</div>
+
+					<div className='grid grid-cols-6 gap-4'>
+						{Array.from({ length: 6 }).map((_, index) => (
+							<div
+								key={index}
+								className='flex flex-col items-center gap-4'>
+								<div className='w-18 h-18 rounded-md border-2 shadow-md'></div>
+								<div>Category {index + 1}</div>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<Categories />
+
+				<div className='grid grid-cols-6 gap-4'>
+					{Array.from({ length: 12 }).map((_, index) => (
+						<div
+							key={index}
+							className='flex flex-col p-4 gap-4'>
+							<div
+								className='w-full h-40 bg-cover bg-center bg-no-repeat rounded-md bg-gray-200 transition-all hover:ring-4 hover:ring-red-500 ring-offset-4'
+								style={{
+									backgroundImage:
+										"url('https://img.alicdn.com/bao/uploaded/i3/2214181223328/O1CN01DU7GD71aSHCQWL7sf_!!4611686018427386784-0-item_pic.jpg_460x460q90.jpg_.webp')",
+								}}></div>
+
+							<div className='font-bold font-heading line-clamp-2 text-lg'>
+								Lorem ipsum dolor sit amet, consectetur
+								adipisicing elit. {index + 1}
+							</div>
+
+							<div className='font-heading font-bold text-sm py-1 px-2 text-red-500 w-fit border-red-500 border-l-2 bg-red-100'>
+								$19.99
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+
+			<Footer />
+		</>
+	)
+}

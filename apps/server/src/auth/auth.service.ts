@@ -10,7 +10,7 @@ import { hash, verify } from 'argon2';
 import { ulid } from 'ulid';
 
 import { CodeType } from '@repo/db';
-import { IJwtPayload } from 'src/common/interfaces';
+import { IJwtPayload } from '@repo/shared';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDTO, RegisterDTO } from './dtos';
@@ -79,7 +79,6 @@ export class AuthService {
   }
 
   async login(data: LoginDTO & { ipAddress?: string; userAgent?: string }) {
-    console.log({ data });
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
       select: {
@@ -109,7 +108,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
 
     const sessionId = ulid().toString();
-    console.log('Session ID:', sessionId, 'Type:', typeof sessionId);
 
     const payload: IJwtPayload = {
       sub: user.id,

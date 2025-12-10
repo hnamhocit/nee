@@ -1,19 +1,15 @@
 import type { Metadata } from 'next'
-import { Manrope, Playfair_Display } from 'next/font/google'
+import { Inter, Manrope } from 'next/font/google'
 import { ReactNode } from 'react'
-
-import Providers from '@/components/Providers'
-import StyledComponentsRegistry from '@/components/Registry'
 import './globals.css'
 
-const playfair = Playfair_Display({
+const headingFont = Manrope({
 	subsets: ['latin'],
-	variable: '--font-serif',
+	variable: '--font-heading',
 })
 
-const manrope = Manrope({
+const bodyFont = Inter({
 	subsets: ['latin'],
-	variable: '--font-sans',
 })
 
 export const metadata: Metadata = {
@@ -29,10 +25,8 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={`${playfair.variable} ${manrope.variable} antialiased`}>
-				<StyledComponentsRegistry>
-					<Providers>{children}</Providers>
-				</StyledComponentsRegistry>
+				className={`${headingFont.variable} ${bodyFont.className} antialiased`}>
+				{children}
 			</body>
 		</html>
 	)

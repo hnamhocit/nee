@@ -13,9 +13,9 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 
+import type { IJwtPayload } from '@repo/shared';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 import { User } from 'src/common/decorators/user.decorator';
-import type { IJwtPayload } from 'src/common/interfaces';
 import { AuthService } from './auth.service';
 import { LoginDTO, RegisterDTO } from './dtos';
 
@@ -48,8 +48,6 @@ export class AuthController {
       ipAddress: realIp,
       userAgent: userAgent,
     };
-
-    console.log({ loginData });
 
     const { accessToken, refreshToken } =
       await this.authService.login(loginData);

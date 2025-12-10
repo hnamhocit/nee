@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 
-import { IJwtPayload } from '../interfaces';
+import { IJwtPayload } from '@repo/shared';
 
 export const User = createParamDecorator(
   (data: keyof IJwtPayload | undefined, ctx: ExecutionContext) => {
