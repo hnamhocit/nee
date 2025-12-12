@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -76,7 +77,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard('jwt-refresh'))
-  @Post('refresh')
+  @Get('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(
     @User() user: IJwtPayload,

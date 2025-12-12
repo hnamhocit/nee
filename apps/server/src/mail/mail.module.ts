@@ -3,6 +3,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { Module } from '@nestjs/common';
 import { join } from 'path';
 
+import { BullModule } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from './mail.service';
 
@@ -30,6 +31,9 @@ import { MailService } from './mail.service';
         },
       }),
       inject: [ConfigService],
+    }),
+    BullModule.registerQueue({
+      name: 'mail',
     }),
   ],
   providers: [MailService],

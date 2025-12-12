@@ -23,6 +23,9 @@ model User {
   profile           UserProfile?
   sessions          Session[]
   verificationCodes VerificationCode[]
+  notifications     Notification[]
+  shop              Shop?
+  devices           UserDevice[]
 
   role      Role     @default(USER)
   createdAt DateTime @default(now())
@@ -54,21 +57,54 @@ enum Gender {
   UNKNOWN
 }
 
+enum DeviceType {
+  MOBILE_APP
+  WEB
+  DESKTOP_APP
+}
+
+model UserDevice {
+  id String @id @default(ulid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deviceId     String
+  type         DeviceType
+  isRootDevice Boolean    @default(false)
+
+  deviceName   String
+  lastIp       String
+  lastActiveAt DateTime @default(now())
+
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, deviceId])
+}
+
 model Session {
-  id     String @id @default(ulid())
+  id String @id @default(ulid())
+
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   tokenHash String @unique
 
-  deviceInfo String?
-  ipAddress  String?
+  userDeviceId String
+  userDevice   UserDevice @relation(fields: [userDeviceId], references: [id], onDelete: Cascade)
 
-  expiresAt  DateTime
-  lastUsedAt DateTime @default(now())
+  userAgent String
+  ipAddress String
+
+  expiresAt DateTime
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@index([userDeviceId])
   @@index([userId])
 }
 
@@ -96,4 +132,136 @@ enum CodeType {
   EMAIL_VERIFICATION
   PASSWORD_RESET
   TWO_FACTOR_AUTH
+}
+
+enum NotificationType {
+  // --- NHÓM ĐƠN HÀNG (Order Lifecycle) ---
+  ORDER_CREATED // Đặt hàng thành công (Chờ xác nhận)
+  ORDER_CONFIRMED // Shop đã xác nhận/Người bán đang chuẩn bị hàng
+  ORDER_SHIPPED // Đã giao cho đơn vị vận chuyển
+  ORDER_DELIVERING // Shipper đang giao đến bạn (Out for delivery)
+  ORDER_SUCCESS // Giao hàng thành công
+  ORDER_CANCELLED // Đơn bị hủy (Bởi người mua, shop, hoặc hệ thống)
+  ORDER_RETURN_REQUEST // Yêu cầu trả hàng/hoàn tiền
+  ORDER_REFUNDED // Đã hoàn tiền thành công
+
+  // --- NHÓM TƯƠNG TÁC & SOCIAL ---
+  RATING_REMINDER
+  SHOP_REPLY
+  QUESTION_ANSWERED
+
+  // --- NHÓM KHUYẾN MÃI & ƯU ĐÃI (Marketing) ---
+  PROMOTION_NEW // Chương trình khuyến mãi chung (Sale 9.9, Black Friday)
+  FLASH_SALE_REMINDER // Nhắc nhở sắp đến giờ Flash Sale đã đăng ký
+  VOUCHER_RECEIVED // Bạn nhận được Voucher/Mã giảm giá mới
+  COIN_RECEIVED // Nhận được xu thưởng (Nếu có hệ thống xu)
+  COIN_EXPIRING // Xu sắp hết hạn (Kích thích mua hàng)
+
+  // --- NHÓM HỆ THỐNG & TÀI KHOẢN (System) ---
+  WELCOME
+  ACCOUNT_SECURITY
+  SYSTEM_MAINTENANCE
+  POLICY_UPDATE
+}
+
+model Notification {
+  id     String @id @default(ulid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type NotificationType
+
+  data Json
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([type])
+}
+
+model Shop {
+  id String @id @default(ulid())
+
+  name        String
+  avatarURL   String
+  slug        String  @unique
+  description String?
+
+  ownerId  String    @unique
+  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model Product {
+  id          String @id @default(ulid())
+  name        String
+  slug        String @unique
+  description String @db.Text
+
+  optionKeys Json @default("[]")
+
+  shopId     String
+  shop       Shop              @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  categories ProductCategory[]
+  variants   ProductVariant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id String @id @default(ulid())
+
+  sku     String @unique // Stock Keeping Unit (Ví dụ: IP15-PM-TI-512)
+  barcode String
+
+  price BigInt
+  stock Int    @default(0)
+
+  weight Float  @default(0) // Đơn vị: Grams (g)
+  length Float? // cm
+  width  Float? // cm
+  height Float? // cm
+
+  options Json
+
+  thumbnailURL String
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([sku])
+}
+
+model Category {
+  id           String  @id @default(ulid())
+  name         String
+  slug         String  @unique
+  thumbnailURL String
+  parentId     String?
+
+  parent   Category?         @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[]        @relation("CategoryToCategory")
+  products ProductCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

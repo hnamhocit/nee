@@ -11,6 +11,7 @@ import { ulid } from 'ulid';
 
 import { CodeType } from '@repo/db';
 import { IJwtPayload } from '@repo/shared';
+import { DeviceUtil } from 'src/common/utils/device';
 import { MailService } from 'src/mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDTO, RegisterDTO } from './dtos';
@@ -78,7 +79,7 @@ export class AuthService {
     return null;
   }
 
-  async login(data: LoginDTO & { ipAddress?: string; userAgent?: string }) {
+  async login(data: LoginDTO & { ipAddress: string; userAgent: string }) {
     const user = await this.prisma.user.findUnique({
       where: { email: data.email },
       select: {
@@ -107,7 +108,7 @@ export class AuthService {
     if (!isPasswordMatch)
       throw new UnauthorizedException('Invalid credentials');
 
-    const sessionId = ulid().toString();
+    const sessionId = ulid();
 
     const payload: IJwtPayload = {
       sub: user.id,
@@ -120,16 +121,48 @@ export class AuthService {
     const tokens = await this.generateTokens(payload);
 
     const refreshTokenHash = await hash(tokens.refreshToken);
+    const deviceName = DeviceUtil.getFriendlyName(data.userAgent);
 
-    await this.prisma.session.create({
-      data: {
-        id: sessionId,
-        userId: user.id,
-        tokenHash: refreshTokenHash,
-        deviceInfo: data.userAgent || 'Unknown Device',
-        ipAddress: data.ipAddress || 'Unknown IP',
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
+    await this.prisma.$transaction(async (tx) => {
+      const userDevice = await tx.userDevice.upsert({
+        where: {
+          userId_deviceId: {
+            userId: user.id,
+            deviceId: data.deviceId,
+          },
+        },
+        update: {
+          lastIp: data.ipAddress,
+          lastActiveAt: new Date(),
+          deviceName,
+        },
+        create: {
+          userId: user.id,
+          deviceId: data.deviceId,
+          type: 'WEB',
+          deviceName,
+          lastIp: data.ipAddress,
+          isRootDevice: false,
+        },
+      });
+
+      await tx.session.deleteMany({
+        where: {
+          userDeviceId: userDevice.id,
+        },
+      });
+
+      await tx.session.create({
+        data: {
+          id: sessionId,
+          userId: user.id,
+          userDeviceId: userDevice.id,
+          tokenHash: refreshTokenHash,
+          userAgent: data.userAgent,
+          ipAddress: data.ipAddress,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày
+        },
+      });
     });
 
     return tokens;
@@ -140,12 +173,18 @@ export class AuthService {
       where: { id: sessionId },
     });
 
-    return null;
+    return true;
   }
 
   async refresh(userId: string, sessionId: string) {
     const foundSession = await this.prisma.session.findUnique({
       where: { id: sessionId },
+      select: {
+        expiresAt: true,
+        id: true,
+        tokenHash: true,
+        userDeviceId: true,
+      },
     });
 
     if (!foundSession) {
@@ -187,14 +226,22 @@ export class AuthService {
     const tokens = await this.generateTokens(payload);
     const newRefreshTokenHash = await hash(tokens.refreshToken);
 
-    await this.prisma.session.update({
-      where: { id: foundSession.id },
-      data: {
-        tokenHash: newRefreshTokenHash,
-        lastUsedAt: new Date(),
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-    });
+    await this.prisma.$transaction([
+      this.prisma.session.update({
+        where: { id: foundSession.id },
+        data: {
+          tokenHash: newRefreshTokenHash,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      }),
+
+      this.prisma.userDevice.update({
+        where: { id: foundSession.userDeviceId },
+        data: {
+          lastActiveAt: new Date(),
+        },
+      }),
+    ]);
 
     return tokens;
   }

@@ -3,6 +3,9 @@ import { Inter, Manrope } from 'next/font/google'
 import { ReactNode } from 'react'
 import './globals.css'
 
+import { Authenticate } from '@repo/ui'
+import { Toaster } from 'sonner'
+
 const headingFont = Manrope({
 	subsets: ['latin'],
 	variable: '--font-heading',
@@ -26,7 +29,8 @@ export default function RootLayout({
 		<html lang='en'>
 			<body
 				className={`${headingFont.variable} ${bodyFont.className} antialiased`}>
-				{children}
+				<Authenticate>{children}</Authenticate>
+				<Toaster />
 			</body>
 		</html>
 	)

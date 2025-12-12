@@ -34,7 +34,7 @@ export default function AuthLayout({ children, type }: AuthLayoutProps) {
 					</div>
 				</div>
 
-				<form className='w-full space-y-6'>
+				<div className='w-full space-y-6'>
 					<div className='grid grid-cols-2 gap-3'>
 						<Button
 							type='button'
@@ -93,7 +93,7 @@ export default function AuthLayout({ children, type }: AuthLayoutProps) {
 							{type === 'login' ? 'Register' : 'Log in'}
 						</Link>
 					</div>
-				</form>
+				</div>
 			</div>
 		</div>
 	)
