@@ -90,11 +90,6 @@ export class AuthService {
         banReason: true,
         bannedUntil: true,
         role: true,
-        profile: {
-          select: {
-            avatarURL: true,
-          },
-        },
       },
     });
 
@@ -115,7 +110,6 @@ export class AuthService {
       username: user.username,
       role: user.role,
       sessionId: sessionId,
-      avatarURL: user.profile?.avatarURL ?? null,
     };
 
     const tokens = await this.generateTokens(payload);
@@ -206,11 +200,6 @@ export class AuthService {
         id: true,
         username: true,
         role: true,
-        profile: {
-          select: {
-            avatarURL: true,
-          },
-        },
       },
     });
     if (!user) throw new UnauthorizedException('User not found');
@@ -219,7 +208,6 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       role: user.role,
-      avatarURL: user.profile?.avatarURL ?? null,
       sessionId: foundSession.id,
     };
 

@@ -9,45 +9,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String  @id @default(ulid())
-  email    String  @unique
-  username String? @unique
-  password String
+// ============================================================================
+// MODULE: USER & AUTHENTICATION
+// ============================================================================
 
-  isActive    Boolean   @default(false)
-  isBanned    Boolean   @default(false)
-  banReason   String?
-  bannedUntil DateTime?
-
-  profile           UserProfile?
-  sessions          Session[]
-  verificationCodes VerificationCode[]
-  notifications     Notification[]
-  shop              Shop?
-  devices           UserDevice[]
-
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model UserProfile {
-  id String @id @default(ulid())
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  displayName   String?
-  avatarURL     String?
-  backgroundURL String?
-  phoneNumber   String?
-  dateOfBirth   DateTime?
-  gender        Gender    @default(UNKNOWN)
-
-  preferences Json? @default("{}")
-
-  updatedAt DateTime @updatedAt
+enum Role {
+  USER
+  ADMIN
+  SELLER
 }
 
 enum Gender {
@@ -61,6 +30,57 @@ enum DeviceType {
   MOBILE_APP
   WEB
   DESKTOP_APP
+}
+
+enum CodeType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  TWO_FACTOR_AUTH
+}
+
+model User {
+  id       String  @id @default(ulid())
+  email    String  @unique
+  username String? @unique
+  password String
+
+  isActive    Boolean   @default(false)
+  isBanned    Boolean   @default(false)
+  banReason   String?
+  bannedUntil DateTime?
+
+  role Role @default(USER)
+
+  // Relations
+  profile           UserProfile?
+  shop              Shop?
+  sessions          Session[]
+  devices           UserDevice[]
+  verificationCodes VerificationCode[]
+  notifications     Notification[]
+  addresses         UserAddress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserProfile {
+  id String @id @default(ulid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName String?
+  avatar      String?
+  background  String?
+  phoneNumber String?
+  dateOfBirth DateTime?
+  gender      Gender    @default(UNKNOWN)
+
+  preferences Json? @default("{}")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model UserDevice {
@@ -122,42 +142,63 @@ model VerificationCode {
   @@index([userId, type])
 }
 
-enum Role {
-  USER
-  ADMIN
-  SELLER
+enum AddressType {
+  HOME // Nhà riêng (Giao tất cả các ngày)
+  OFFICE // Văn phòng (Giao giờ hành chính)
 }
 
-enum CodeType {
-  EMAIL_VERIFICATION
-  PASSWORD_RESET
-  TWO_FACTOR_AUTH
+model UserAddress {
+  id String @id @default(ulid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  recipientName String
+  phoneNumber   String
+
+  street   String // Số nhà, tên đường
+  ward     String? // Phường/Xã (Để optional vì nước ngoài có thể ko có)
+  district String // Quận/Huyện
+  city     String // Tỉnh/Thành phố
+  country  String  @default("VN")
+
+  isDefault Boolean     @default(false)
+  type      AddressType @default(HOME)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
+
+// ============================================================================
+// MODULE: NOTIFICATION SYSTEM
+// ============================================================================
 
 enum NotificationType {
-  // --- NHÓM ĐƠN HÀNG (Order Lifecycle) ---
-  ORDER_CREATED // Đặt hàng thành công (Chờ xác nhận)
-  ORDER_CONFIRMED // Shop đã xác nhận/Người bán đang chuẩn bị hàng
-  ORDER_SHIPPED // Đã giao cho đơn vị vận chuyển
-  ORDER_DELIVERING // Shipper đang giao đến bạn (Out for delivery)
-  ORDER_SUCCESS // Giao hàng thành công
-  ORDER_CANCELLED // Đơn bị hủy (Bởi người mua, shop, hoặc hệ thống)
-  ORDER_RETURN_REQUEST // Yêu cầu trả hàng/hoàn tiền
-  ORDER_REFUNDED // Đã hoàn tiền thành công
+  // Order Lifecycle
+  ORDER_CREATED
+  ORDER_CONFIRMED
+  ORDER_SHIPPED
+  ORDER_DELIVERING
+  ORDER_SUCCESS
+  ORDER_CANCELLED
+  ORDER_RETURN_REQUEST
+  ORDER_REFUNDED
 
-  // --- NHÓM TƯƠNG TÁC & SOCIAL ---
+  // Social
   RATING_REMINDER
   SHOP_REPLY
   QUESTION_ANSWERED
 
-  // --- NHÓM KHUYẾN MÃI & ƯU ĐÃI (Marketing) ---
-  PROMOTION_NEW // Chương trình khuyến mãi chung (Sale 9.9, Black Friday)
-  FLASH_SALE_REMINDER // Nhắc nhở sắp đến giờ Flash Sale đã đăng ký
-  VOUCHER_RECEIVED // Bạn nhận được Voucher/Mã giảm giá mới
-  COIN_RECEIVED // Nhận được xu thưởng (Nếu có hệ thống xu)
-  COIN_EXPIRING // Xu sắp hết hạn (Kích thích mua hàng)
+  // Marketing
+  PROMOTION_NEW
+  FLASH_SALE_REMINDER
+  VOUCHER_RECEIVED
+  COIN_RECEIVED
+  COIN_EXPIRING
 
-  // --- NHÓM HỆ THỐNG & TÀI KHOẢN (System) ---
+  // System
   WELCOME
   ACCOUNT_SECURITY
   SYSTEM_MAINTENANCE
@@ -170,27 +211,76 @@ model Notification {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   type NotificationType
-
   data Json
 
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Thêm updatedAt phòng khi user mark as read
 
   @@index([userId])
   @@index([type])
 }
 
+// ============================================================================
+// MODULE: SHOP & SELLER
+// ============================================================================
+
 model Shop {
   id String @id @default(ulid())
 
   name        String
-  avatarURL   String
+  avatar      String
   slug        String  @unique
   description String?
 
-  ownerId  String    @unique
-  owner    User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String @unique
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
   products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================================
+// MODULE: PRODUCT CATALOG
+// ============================================================================
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Category {
+  id        String  @id @default(ulid())
+  name      String
+  slug      String  @unique
+  thumbnail String?
+
+  parentId String?
+  parent   Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryToCategory")
+
+  products ProductCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String @id @default(ulid())
+  name        String
+  slug        String @unique
+  description String @db.Text
+
+  optionKeys Json @default("[]")
+
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  categories    ProductCategory[]
+  variants      ProductVariant[]
+  productMedias ProductMedia[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,42 +293,43 @@ model ProductCategory {
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+
   @@id([productId, categoryId])
 }
 
-model Product {
-  id          String @id @default(ulid())
-  name        String
-  slug        String @unique
-  description String @db.Text
+model ProductMedia {
+  id    String    @id @default(ulid())
+  key   String
+  type  MediaType @default(IMAGE)
+  alt   String
+  order Int       @default(0)
 
-  optionKeys Json @default("[]")
-
-  shopId     String
-  shop       Shop              @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  categories ProductCategory[]
-  variants   ProductVariant[]
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([productId, order])
 }
 
 model ProductVariant {
   id String @id @default(ulid())
 
-  sku     String @unique // Stock Keeping Unit (Ví dụ: IP15-PM-TI-512)
+  sku     String @unique
   barcode String
 
   price BigInt
   stock Int    @default(0)
 
-  weight Float  @default(0) // Đơn vị: Grams (g)
-  length Float? // cm
-  width  Float? // cm
-  height Float? // cm
+  // Dimensions
+  weight Float  @default(0)
+  length Float?
+  width  Float?
+  height Float?
 
-  options Json
-
+  options      Json
   thumbnailURL String
 
   productId String
@@ -249,19 +340,4 @@ model ProductVariant {
 
   @@index([productId])
   @@index([sku])
-}
-
-model Category {
-  id           String  @id @default(ulid())
-  name         String
-  slug         String  @unique
-  thumbnailURL String
-  parentId     String?
-
-  parent   Category?         @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
-  children Category[]        @relation("CategoryToCategory")
-  products ProductCategory[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

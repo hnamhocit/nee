@@ -24,8 +24,6 @@ export const authService = {
 	checkAuth: async () => {
 		const store = useUserStore.getState()
 
-		store.setIsLoading(true)
-
 		try {
 			const { data } =
 				await http.get<IResponse<{ accessToken: string }>>(

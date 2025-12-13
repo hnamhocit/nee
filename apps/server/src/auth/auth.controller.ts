@@ -11,28 +11,29 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 
 import type { IJwtPayload } from '@repo/shared';
-import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 import { User } from 'src/common/decorators/user.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { JwtRefreshGuard } from 'src/common/guards/jwtRefresh.guard';
 import { AuthService } from './auth.service';
 import { LoginDTO, RegisterDTO } from './dtos';
 
 @Controller('auth')
+@UseGuards(JwtAuthGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('register')
-  @ResponseMessage(
-    'Registration successful. Please check your email to verify account.',
-  )
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: RegisterDTO) {
     await this.authService.register(dto);
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -58,9 +59,7 @@ export class AuthController {
     return { accessToken };
   }
 
-  @UseGuards(AuthGuard('jwt-access'))
   @Post('logout')
-  @ResponseMessage('Logged out successfully')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @User() user: IJwtPayload,
@@ -76,7 +75,8 @@ export class AuthController {
     });
   }
 
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @Public()
+  @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(

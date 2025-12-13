@@ -13,7 +13,7 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
 	user: null,
 	accessToken: null,
-	isLoading: false,
+	isLoading: true,
 	setIsLoading: (loading) => set({ isLoading: loading }),
 	logout: () => set({ user: null, accessToken: null, isLoading: false }),
 	setAuth: (user, token) =>

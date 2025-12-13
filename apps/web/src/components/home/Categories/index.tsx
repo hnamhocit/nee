@@ -4,152 +4,37 @@ import { Button } from '@/components/ui/button'
 import clsx from 'clsx'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const categories = [
-	// From Image 1 (Top Row)
-	{
-		label: "Men's Fashion",
-		slug: 'men-fashion',
-		thumbnailURL: '/categories/men-fashion.webp',
-	},
-	{
-		label: 'Phones & Accessories',
-		slug: 'phones-accessories',
-		thumbnailURL: '/categories/phones.webp',
-	},
-	{
-		label: 'Consumer Electronics',
-		slug: 'consumer-electronics',
-		thumbnailURL: '/categories/electronics.jpg',
-	},
-	{
-		label: 'Computers & Laptops',
-		slug: 'computers-laptops',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Cameras',
-		slug: 'cameras',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Watches',
-		slug: 'watches',
-		thumbnailURL: '',
-	},
-	{
-		label: "Men's Shoes",
-		slug: 'men-shoes',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Home Appliances',
-		slug: 'home-appliances',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Sports & Travel',
-		slug: 'sports-travel',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Automotive',
-		slug: 'automotive',
-		thumbnailURL: '',
-	},
-	{
-		label: "Women's Fashion",
-		slug: 'women-fashion',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Mother & Baby',
-		slug: 'mother-baby',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Home & Living',
-		slug: 'home-living',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Beauty',
-		slug: 'beauty',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Health',
-		slug: 'health',
-		thumbnailURL: '',
-	},
-	{
-		label: "Women's Shoes",
-		slug: 'women-shoes',
-		thumbnailURL: '',
-	},
-	{
-		label: "Women's Bags",
-		slug: 'women-bags',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Accessories & Jewelry',
-		slug: 'accessories-jewelry',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Groceries',
-		slug: 'groceries',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Books & Stationery',
-		slug: 'books-stationery',
-		thumbnailURL: '',
-	},
-	{
-		label: "Men's Bags",
-		slug: 'men-bags',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Toys',
-		slug: 'toys',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Pet Care',
-		slug: 'pet-care',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Tools & Hardware',
-		slug: 'tools-hardware',
-		thumbnailURL: '',
-	},
-	{
-		label: "Kids' Fashion",
-		slug: 'kids-fashion',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Laundry & House Care',
-		slug: 'laundry-house-care',
-		thumbnailURL: '',
-	},
-	{
-		label: 'Vouchers & Services',
-		slug: 'vouchers-services',
-		thumbnailURL: '',
-	},
-]
+import { Category } from '@repo/db'
+import { categoriesService, getDownloadURL } from '@repo/shared'
 
 export default function Categories() {
+	const [categories, setCategories] = useState<Category[]>([])
+	const [isLoading, setIsLoading] = useState(true)
 	const [isShowingAll, setIsShowingAll] = useState(false)
+
+	useEffect(() => {
+		const fetchCategories = async () => {
+			try {
+				const { data } = await categoriesService.getCategories()
+				setCategories(data.data)
+			} catch (error) {
+				console.error('Error fetching categories:', error)
+			} finally {
+				setIsLoading(false)
+			}
+		}
+
+		fetchCategories()
+	})
 
 	const toggleIsShowingAll = () => {
 		setIsShowingAll((prev) => !prev)
+	}
+
+	if (isLoading) {
+		return <div>Loading...</div>
 	}
 
 	return (
@@ -187,10 +72,14 @@ export default function Categories() {
 							<div
 								className='w-18 h-18 rounded-md bg-cover bg-center bg-no-repeat'
 								style={{
-									backgroundImage: `url(${category.thumbnailURL})`,
+									backgroundImage: `url(${getDownloadURL(
+										category.thumbnail ?? '',
+									)})`,
 								}}></div>
 
-							<div>{category.label}</div>
+							<div className='text-center font-medium'>
+								{category.name}
+							</div>
 						</Link>
 					))}
 			</div>

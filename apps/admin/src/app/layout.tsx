@@ -1,25 +1,16 @@
+import { GeistSans } from 'geist/font/sans'
 import type { Metadata } from 'next'
-import {
-	JetBrains_Mono,
-	Playfair_Display,
-	Plus_Jakarta_Sans,
-} from 'next/font/google'
+import { Geist_Mono } from 'next/font/google'
 import { ReactNode } from 'react'
 import './globals.css'
 
-const serifFont = Playfair_Display({
-	subsets: ['latin'],
-	variable: '--font-serif',
-})
+import DefaultLayout from '@/layouts/DefaultLayout'
+import { Authenticate } from '@repo/ui'
+import { Toaster } from 'sonner'
 
-const sansFont = Plus_Jakarta_Sans({
+const monoFont = Geist_Mono({
 	subsets: ['latin'],
-	variable: '--font-sans',
-})
-
-const monoFont = JetBrains_Mono({
-	subsets: ['latin'],
-	variable: '--font-mono',
+	variable: '--font-geist-mono',
 })
 
 export const metadata: Metadata = {
@@ -35,8 +26,11 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={`${sansFont.variable} ${serifFont.variable} ${monoFont.variable} antialiased`}>
-				{children}
+				className={`${GeistSans.className} ${monoFont.variable} antialiased`}>
+				<Authenticate>
+					<DefaultLayout>{children}</DefaultLayout>
+				</Authenticate>
+				<Toaster />
 			</body>
 		</html>
 	)
