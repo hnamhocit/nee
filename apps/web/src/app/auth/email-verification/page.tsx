@@ -33,7 +33,7 @@ export default function EmailVerificationPage() {
 	}
 
 	return (
-		<div className='min-h-screen flex items-center justify-center bg-gray-50 p-4'>
+		<div className='min-h-screen flex items-center justify-center p-4'>
 			<div className='max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center space-y-6'>
 				{/* 1. Header & Icon */}
 				<div className='flex flex-col items-center gap-4'>

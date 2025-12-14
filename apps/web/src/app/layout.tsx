@@ -28,7 +28,7 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={`${headingFont.variable} ${bodyFont.className} antialiased`}>
+				className={`${headingFont.variable} ${bodyFont.className} antialiased transition-colors duration-300`}>
 				<Authenticate>{children}</Authenticate>
 				<Toaster />
 			</body>

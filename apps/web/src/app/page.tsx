@@ -9,8 +9,8 @@ import Products from '@/components/home/Products'
 export default function Home() {
 	return (
 		<>
-			<Navbar />
 			<Banner />
+			<Navbar />
 			<Header />
 
 			<div className='min-h-screen container mx-auto px-4 py-16 space-y-16'>

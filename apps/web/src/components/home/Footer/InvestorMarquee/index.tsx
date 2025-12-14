@@ -12,7 +12,7 @@ const PARTNERS = [
 
 export default function InvestorMarquee() {
 	return (
-		<div className='w-full py-8 bg-slate-50 overflow-hidden relative'>
+		<div className='w-full py-8 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300 overflow-hidden relative'>
 			<p className='text-center text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6'>
 				Trusted by industry leaders
 			</p>
@@ -34,8 +34,8 @@ export default function InvestorMarquee() {
 				</div>
 			</div>
 
-			<div className='absolute inset-y-0 left-0 w-20 bg-linear-to-r from-slate-50 to-transparent pointer-events-none'></div>
-			<div className='absolute inset-y-0 right-0 w-20 bg-linear-to-l from-slate-50 to-transparent pointer-events-none'></div>
+			<div className='absolute inset-y-0 left-0 w-20 bg-linear-to-r from-slate-50 dark:from-neutral-900 transition-colors duration-300 to-transparent pointer-events-none'></div>
+			<div className='absolute inset-y-0 right-0 w-20 bg-linear-to-l from-slate-50 dark:from-neutral-900 transition-colors duration-300 to-transparent pointer-events-none'></div>
 		</div>
 	)
 }

@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { CameraIcon, ShoppingCartIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+
 export default function Header() {
 	return (
-		<header className='sticky top-0 left-0 w-full z-20 bg-white shadow-sm'>
+		<header className='sticky top-12 left-0 w-full z-20 bg-(--sub-background) transition-colors duration-300 shadow-sm border-b'>
 			<div className='p-4 flex items-center container mx-auto'>
 				<div className='flex items-center gap-3 flex-1'>
 					<Link href='/'>
@@ -46,7 +47,7 @@ export default function Header() {
 					<div className='flex items-center gap-3'>
 						<Link
 							href='/#'
-							className='text-sm text-red-500'>
+							className='text-sm text-red-500 font-medium hover:underline'>
 							All Categories
 						</Link>
 
@@ -57,7 +58,7 @@ export default function Header() {
 
 						<Link
 							href='/#'
-							className='text-sm text-red-500'>
+							className='text-sm text-red-500 font-medium hover:underline'>
 							Deals
 						</Link>
 
@@ -68,7 +69,7 @@ export default function Header() {
 
 						<Link
 							href='/#'
-							className='text-sm text-red-500'>
+							className='text-sm text-red-500 font-medium hover:underline'>
 							What's New
 						</Link>
 
@@ -79,7 +80,7 @@ export default function Header() {
 
 						<Link
 							href='/#'
-							className='text-sm text-gray-500'>
+							className='text-sm text-neutral-500 dark:text-neutral-400'>
 							Chrisamas atmosphere is good
 						</Link>
 					</div>

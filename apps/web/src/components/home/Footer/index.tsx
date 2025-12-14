@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import {
 	CreditCard,
 	Facebook,
@@ -13,60 +11,53 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import InvestorMarquee from './InvestorMarquee'
+
+const badges = [
+	{
+		name: 'Free Shipping',
+		description: 'On all orders over $200',
+		Icon: Truck,
+	},
+	{
+		name: 'Secure Payment',
+		description: '100% secure payment',
+		Icon: ShieldCheck,
+	},
+	{
+		name: '24/7 Support',
+		description: 'Dedicated support',
+		Icon: Headphones,
+	},
+]
 
 export default function Footer() {
 	return (
-		<footer className='bg-white border-t border-gray-200'>
+		<footer className='bg-white dark:bg-(--sub-background) border-t border-gray-200 dark:border-neutral-700 transition-colors duration-300'>
 			<div className='container mx-auto px-4 py-10'>
 				<div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-					<div className='flex items-center gap-4'>
-						<div className='p-3 bg-blue-50 rounded-full text-blue-600'>
-							<Truck size={24} />
+					{badges.map(({ name, description, Icon }) => (
+						<div
+							key={name}
+							className='flex items-center gap-4'>
+							<div className='p-3 bg-red-50 rounded-full text-red-600 dark:bg-red-600 dark:text-white transition-colors duration-300'>
+								<Icon size={24} />
+							</div>
+
+							<div>
+								<h4 className='font-bold dark:text-white font-heading text-gray-900'>
+									{name}
+								</h4>
+
+								<p className='text-sm text-gray-500'>
+									{description}
+								</p>
+							</div>
 						</div>
-
-						<div>
-							<h4 className='font-bold font-heading text-gray-900'>
-								Free Shipping
-							</h4>
-
-							<p className='text-sm text-gray-500'>
-								On all orders over $200
-							</p>
-						</div>
-					</div>
-
-					<div className='flex items-center gap-4'>
-						<div className='p-3 bg-blue-50 rounded-full text-blue-600'>
-							<ShieldCheck size={24} />
-						</div>
-
-						<div>
-							<h4 className='font-bold font-heading text-gray-900'>
-								Secure Payment
-							</h4>
-
-							<p className='text-sm text-gray-500'>
-								100% secure payment
-							</p>
-						</div>
-					</div>
-
-					<div className='flex items-center gap-4'>
-						<div className='p-3 bg-blue-50 rounded-full text-blue-600'>
-							<Headphones size={24} />
-						</div>
-
-						<div>
-							<h4 className='font-bold font-heading text-gray-900'>
-								24/7 Support
-							</h4>
-
-							<p className='text-sm text-gray-500'>
-								Dedicated support
-							</p>
-						</div>
-					</div>
+					))}
 				</div>
 			</div>
 
@@ -112,7 +103,7 @@ export default function Footer() {
 
 					{/* Quick Links */}
 					<div className='lg:col-span-2 space-y-6'>
-						<h4 className='font-bold font-heading text-gray-900'>
+						<h4 className='font-bold font-heading text-gray-900 dark:text-white'>
 							Shopping
 						</h4>
 
@@ -135,9 +126,10 @@ export default function Footer() {
 					</div>
 
 					<div className='lg:col-span-2 space-y-6'>
-						<h4 className='font-bold font-heading text-gray-900'>
+						<h4 className='font-bold font-heading text-gray-900 dark:text-white'>
 							Company
 						</h4>
+
 						<ul className='space-y-3 text-sm text-gray-500'>
 							<li>
 								<FooterLink href='#'>About Us</FooterLink>
@@ -161,7 +153,7 @@ export default function Footer() {
 
 					{/* Newsletter */}
 					<div className='lg:col-span-4 space-y-6'>
-						<h4 className='font-bold font-heading text-gray-900'>
+						<h4 className='font-bold font-heading text-gray-900 dark:text-white'>
 							Stay Updated
 						</h4>
 
@@ -182,14 +174,13 @@ export default function Footer() {
 			</div>
 
 			{/* 4. COPYRIGHT & PAYMENTS */}
-			<div className='bg-gray-50 py-6 border-t border-gray-200'>
+			<div className='bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300 py-6 border-t'>
 				<div className='container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
-					<div className='text-sm text-gray-500'>
+					<div className='text-sm text-gray-500 dark:text-white'>
 						© 2026 E-Commerce Inc. All rights reserved.
 					</div>
 
 					<div className='flex items-center gap-4 opacity-70 grayscale'>
-						{/* Demo Payment Icons */}
 						<CreditCard size={24} />
 						<div className='font-bold text-lg'>VISA</div>
 						<div className='font-bold text-lg italic'>PayPal</div>

@@ -41,7 +41,7 @@ export default function Categories() {
 		<div className='space-y-7'>
 			<div className='text-2xl font-bold font-heading'>Categories</div>
 
-			<div className='grid grid-cols-8 relative'>
+			<div className='grid grid-cols-8 relative bg-(--sub-background) transition duration-300'>
 				<div
 					className={clsx(
 						'absolute top-1/2 -translate-y-1/2',
@@ -68,9 +68,9 @@ export default function Categories() {
 						<Link
 							href={`/categories/${category.slug}`}
 							key={category.slug}
-							className='flex flex-col border hover:border-red-500 transition py-4 items-center gap-4'>
+							className='flex flex-col border hover:border-red-500 transition py-4 items-center justify-between gap-4'>
 							<div
-								className='w-18 h-18 rounded-md bg-cover bg-center bg-no-repeat'
+								className='w-20 h-20 rounded-lg bg-slate-200 bg-cover bg-center bg-no-repeat'
 								style={{
 									backgroundImage: `url(${getDownloadURL(
 										category.thumbnail ?? '',
