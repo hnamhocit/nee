@@ -80,6 +80,7 @@ export default function CategoriesPage() {
 					setCategories={setCategories}
 					categories={categories}
 					category={category}
+					setCategory={setCategory}
 				/>
 			</div>
 

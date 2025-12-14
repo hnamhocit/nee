@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
-  Param,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -36,8 +36,8 @@ export class UploadController {
     return this.uploadService.uploadFiles(files, resource);
   }
 
-  @Delete(':key')
-  deleteFile(@Param('key') key: string) {
+  @Delete()
+  deleteFile(@Query('key') key: string) {
     return this.uploadService.deleteFile(key);
   }
 }

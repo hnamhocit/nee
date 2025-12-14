@@ -13,6 +13,8 @@ export const uploadService = {
 		})
 	},
 	deleteFile: (key: string) => {
-		return http.delete(`/upload/${key}`)
+		return http.delete('/upload', {
+			params: { key },
+		})
 	},
 }

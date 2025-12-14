@@ -10,7 +10,7 @@ import {
 	useEffect,
 	useState,
 } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -45,13 +45,15 @@ interface CategoryModalProps {
 	categories: Category[]
 	setCategories: Dispatch<SetStateAction<Category[]>>
 	category: Category | null
+	setCategory: Dispatch<SetStateAction<Category | null>>
 	buttonRef: RefObject<HTMLButtonElement | null>
 }
 
 export const CategoryModal: FC<CategoryModalProps> = ({
+	setCategories,
 	categories,
 	category,
-	setCategories,
+	setCategory,
 	buttonRef,
 }) => {
 	const [file, setFile] = useState<File | null>(null)
@@ -68,11 +70,13 @@ export const CategoryModal: FC<CategoryModalProps> = ({
 		register,
 		handleSubmit,
 		reset,
+		control,
 		formState: { errors },
 	} = useForm<CategoryFormValues>({
 		resolver: zodResolver(categorySchema),
 		defaultValues: {
 			name: '',
+			thumbnail: '',
 			parentId: '',
 		},
 	})
@@ -82,13 +86,13 @@ export const CategoryModal: FC<CategoryModalProps> = ({
 			reset({
 				name: category.name,
 				thumbnail: category.thumbnail || '',
-				parentId: category.parentId || '',
+				parentId: category.parentId || 'none',
 			})
 		} else {
 			reset({
 				name: '',
 				thumbnail: '',
-				parentId: '',
+				parentId: 'none',
 			})
 		}
 	}, [category])
@@ -96,49 +100,64 @@ export const CategoryModal: FC<CategoryModalProps> = ({
 	const onSubmit = async (data: CategoryFormValues) => {
 		setIsDisabled(true)
 
+		let finalKey = category?.thumbnail
+		let oldKeyToDelete = null
+
 		try {
-			let key: string | null = null
-
-			const formData = new FormData()
-			formData.append('resource', 'categories')
-
 			if (file) {
+				const formData = new FormData()
+				formData.append('resource', 'categories')
 				formData.append('file', file)
 
 				const { data: uploadData } =
 					await uploadService.uploadFile(formData)
+				finalKey = uploadData.data
 
-				key = uploadData.data
+				// Đánh dấu ảnh cũ cần xóa (nhưng chưa xóa vội)
+				if (category?.thumbnail) {
+					oldKeyToDelete = category.thumbnail
+				}
 			}
 
-			data.thumbnail = key
-			if (data.parentId?.length === 0) data.parentId = null
+			const payload = {
+				...data,
+				thumbnail: finalKey,
+				parentId: data.parentId === 'none' ? null : data.parentId,
+			}
 
 			if (category) {
-				await categoriesService.update(category.slug, data)
+				const { data: updatedResponse } =
+					await categoriesService.update(category.slug, payload)
 
 				setCategories((prev) =>
-					prev.map((cat) => {
-						if (cat.id === category.id) {
-							return { ...cat, ...data }
-						}
-						return cat
-					}),
+					prev.map((cat) =>
+						cat.id === category.id ? updatedResponse.data : cat,
+					),
 				)
+
+				if (oldKeyToDelete) {
+					uploadService
+						.deleteFile(oldKeyToDelete)
+						.catch(console.error)
+				}
 
 				toast.success('Category updated successfully.')
 			} else {
 				const { data: newCategory } =
-					await categoriesService.create(data)
-
+					await categoriesService.create(payload)
 				setCategories((prev) => [...prev, newCategory.data])
+
 				toast.success('Category created successfully.')
 			}
+
+			setFile(null)
+			buttonRef.current?.click()
+			setCategory(null)
 		} catch (error) {
+			console.error(error)
 			toast.error(`${title} failed. Please try again.`)
 		} finally {
 			setIsDisabled(false)
-			reset()
 		}
 	}
 
@@ -188,25 +207,37 @@ export const CategoryModal: FC<CategoryModalProps> = ({
 						)}
 					</Field>
 
-					<Field>
-						<FieldLabel>Parent Id</FieldLabel>
+					<Controller
+						name='parentId'
+						control={control}
+						render={({ field: { value, onChange } }) => (
+							<Field>
+								{value}
+								<FieldLabel>Parent Id</FieldLabel>
 
-						<Select>
-							<SelectTrigger>
-								<SelectValue placeholder='Select Parent Id' />
-							</SelectTrigger>
+								<Select
+									value={value as string}
+									onValueChange={onChange}>
+									<SelectTrigger>
+										<SelectValue placeholder='Select Parent Id' />
+									</SelectTrigger>
 
-							<SelectContent>
-								{categories?.map((category) => (
-									<SelectItem
-										key={category.id}
-										value={category.id}>
-										{category.name}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</Field>
+									<SelectContent>
+										<SelectItem value='none'>
+											None
+										</SelectItem>
+										{categories?.map((category) => (
+											<SelectItem
+												key={category.id}
+												value={category.id}>
+												{category.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</Field>
+						)}
+					/>
 
 					<div className='flex w-full justify-end space-x-2 pt-4'>
 						<Button
